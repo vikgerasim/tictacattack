@@ -8,7 +8,9 @@ const lineThickness = screenWidth / 25;
 const lineWidth = screenWidth * .75;
 const leftOffset = screenWidth * .125;
 const cellSize = screenWidth / 4;
-let winningRow = -1;
+let shift = -1;
+let gameOver = false;
+let rotation = '0deg';
 const App = () => {
 
     const [currentPlayer, setCurrentPlayer] = useState('X');
@@ -39,7 +41,7 @@ const App = () => {
 
     // Check for a winning condition
     if (checkWinner(grid)) {
-      Alert.alert(`Player ${currentPlayer} wins! ${winningRow}`);
+      Alert.alert(`Player ${currentPlayer} wins!`);
       //resetGame();
     }
   };
@@ -48,28 +50,38 @@ const App = () => {
   const checkWinner = (grid) => {
     // Check rows
     for (let row of grid) {
-        winningRow++;
+        shift++;
       if (row[0] !== '' && row[0] === row[1] && row[1] === row[2]) {
+        gameOver = true;
+
         return true;
       }
     }
-    winningRow = -1;
+    shift = 3;
 
     // Check columns
     for (let col = 0; col < 3; col++) {
+        shift--;
       if (grid[0][col] !== '' && grid[0][col] === grid[1][col] && grid[1][col] === grid[2][col]) {
+        gameOver = true;
+        rotation = '90deg';
         return true;
       }
     }
+    shift=1;
 
     // Check diagonals
     if (grid[0][0] !== '' && grid[0][0] === grid[1][1] && grid[1][1] === grid[2][2]) {
+        gameOver = true;
+        rotation = '45deg';
       return true;
     }
     if (grid[0][2] !== '' && grid[0][2] === grid[1][1] && grid[1][1] === grid[2][0]) {
+        gameOver = true;
+        rotation = '135deg';
       return true;
     }
-
+    shift =-1;
     return false;
   };
 
@@ -81,7 +93,9 @@ const App = () => {
       ['', '', ''],
     ]);
     setCurrentPlayer('X');
-    winningRow = -1;
+    shift = -1;
+    gameOver = false;
+    rotation = '0deg';
   };
 
   // Render a single cell
@@ -110,15 +124,15 @@ const App = () => {
     {renderGrid()}
  
     {/* {checkWinner(grid) && <View style={styles.overlayLine}></View>} */}
-    {checkWinner(grid) && (
+    {gameOver && (
       <View
         style={[
           styles.overlayLine,
           {
             transform: [
               { translateY: -lineThickness / 2 },
-              { rotate: '0deg' },
-              { translateY: (winningRow - 1) * cellSize }, 
+              { rotate: rotation},
+              { translateY: (shift - 1) * cellSize }, 
             ],
           },
         ]}
@@ -162,7 +176,7 @@ const styles = StyleSheet.create({
     right: 0,
     height: lineThickness, 
     width: lineWidth, 
-    backgroundColor: 'red', 
+    backgroundColor: 'red',
     opacity: 0.8, 
   },
 });
