@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -9,6 +9,7 @@ import {
   StatusBar,
 } from "react-native";
 import { addHighScore } from "./api";
+import { Audio } from "expo-av";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -39,6 +40,9 @@ const Game = () => {
     O: 0,
   });
 
+  const [sound, setSound] = React.useState();
+
+
   // Handle cell press
   const handlePress = (row, col) => {
     if (checkWinner(grid) || moveCount === 9) {
@@ -60,6 +64,9 @@ const Game = () => {
     // Check for a winning condition
     if (checkWinner(grid)) {
       updateScore(currentPlayer);
+
+      playSound();
+
       Alert.alert(`Player ${currentPlayer} wins!`);
       //resetGame();
     } else if (moveCount === 8) {
@@ -132,6 +139,7 @@ const Game = () => {
     shift = -1;
     gameOver = false;
     rotation = "0deg";
+  
   };
 
   const updateScore = (winner) => {
@@ -158,11 +166,47 @@ const Game = () => {
     }
   };
 
+  const playSound = async () => {
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../assets/win.mp3') // Path to your sound file
+      );
+      await sound.playAsync();
+      await sound.setVolumeAsync(0.2);
+      // Optionally unload the sound after playing to free resources
+      sound.setOnPlaybackStatusUpdate((status) => {
+        if (status.didJustFinish) {
+          sound.unloadAsync();
+        }
+      });
+    } catch (error) {
+      console.error('Error playing sound:', error);
+    }
+  };
+
+  useEffect(() => {
+    const playBackgroundMusic = async () => {
+      const { sound } = await Audio.Sound.createAsync(
+        require('../assets/tictactoe2.mp3') // path to your audio file
+      );
+      setSound(sound);
+      await sound.playAsync(); // Automatically play the sound when the page is loaded
+      await sound.setVolumeAsync(0.1); // Set the volume to 10% (optional)
+    };
+
+    playBackgroundMusic();
+    return () => {
+      if (sound) {
+        sound.unloadAsync(); // Unload the sound when the component is unmounted
+      }
+    };
+  }, []); // 
+
   // Render a single cell
   const renderCell = (row, col) => {
     return (
       <TouchableOpacity
-        key={`${row}-${col}`} // Add a unique key prop
+        key={`${row}-${col}`} 
         style={styles.cell}
         onPress={() => handlePress(row, col)}
       >
@@ -232,13 +276,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    borderWidth: 10, // Border width around the entire screen
-    borderColor: "#1FB0B6", // Border color
-    borderRadius: 20, // Round the corners
-    padding: 0, // Padding around the content
-    margin: 10, // Optional: add space between the border and the screen edge
-    backgroundColor: "#fff", // Background color for the screen
-    position: "relative", // Add position relative to make overlayLine work correctly
+    borderWidth: 10, 
+    borderColor: "#1FB0B6", 
+    borderRadius: 20, 
+    margin: 10, 
+    backgroundColor: "#fff", 
+    position: "relative", 
   },
   scoreBoard: {
     width: "100%",
@@ -258,13 +301,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   gridContainer: {
-    position: "absolute", // Make the grid container absolute
-    top: "50%", // Center it vertically
-    left: "50%", // Center it horizontally
+    position: "absolute", 
+    top: "50%", 
+    left: "50%", 
     transform: [
       { translateX: -cellSize * 1.5 },
       { translateY: -cellSize * 1.5 },
-    ], // Center the grid
+    ], 
   },
   cell: {
     width: cellSize,

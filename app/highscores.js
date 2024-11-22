@@ -20,8 +20,8 @@ const HighScoresScreen = () => {
       try {
         const scores = await getHighScores();
         // Sort scores in descending order
-        const sortedScores = scores.sort((a, b) => b.score - a.score);
-        setHighScores(sortedScores);
+        let sortedScores = scores.sort((a, b) => b.score - a.score);
+        setHighScores(sortedScores.slice(0, 10));
         setLoading(false);
       } catch (error) {
         console.error("Error fetching high scores:", error);
@@ -33,13 +33,6 @@ const HighScoresScreen = () => {
   }, []);
 
   const router = useRouter();
-  // Sample high scores data
-  /* const highScores = [
-    { id: '1', name: 'Viktor', score: 10 },
-    { id: '2', name: 'Gabriel', score: 8 },
-    { id: '3', name: 'Denver', score: 7 },
-    { id: '4', name: 'Daniel', score: 6 },
-  ]; */
 
   // Render each item in the list
   const renderItem = ({ item }) => (
