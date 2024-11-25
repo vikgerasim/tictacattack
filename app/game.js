@@ -25,8 +25,8 @@ const Game = () => {
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [startingPlayer, setStartingPlayer] = useState("X");
   const [moveCount, setMoveCount] = useState(0);
-  const [playerXName, setPlayerXName] = useState("Gabriel");
-  const [playerOName, setPlayerOName] = useState("Viktor");
+  const [playerXName, setPlayerXName] = useState("Viktor");
+  const [playerOName, setPlayerOName] = useState("Gabriel");
 
   const [grid, setGrid] = useState([
     ["", "", ""],
@@ -169,7 +169,7 @@ const Game = () => {
   const playSound = async () => {
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/win.mp3') // Path to your sound file
+        require('../assets/win.mp3') 
       );
       await sound.playAsync();
       await sound.setVolumeAsync(0.2);
@@ -187,11 +187,13 @@ const Game = () => {
   useEffect(() => {
     const playBackgroundMusic = async () => {
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/tictactoe2.mp3') // path to your audio file
+        require('../assets/tictactoe2.mp3') 
       );
       setSound(sound);
-      await sound.playAsync(); // Automatically play the sound when the page is loaded
-      await sound.setVolumeAsync(0.1); // Set the volume to 10% (optional)
+      await sound.playAsync(); 
+      await sound.setVolumeAsync(0.1); 
+      await sound.setIsLoopingAsync(true);
+
     };
 
     playBackgroundMusic();
@@ -255,15 +257,21 @@ const Game = () => {
         />
       )}
       {gameOver && (
-        <View>
+        <View style={{alignItems: 'center'}}>
           <Text style={styles.scoreText}>
             Player {currentPlayer === "X" ? "O" : "X"} wins!
           </Text>
           <TouchableOpacity
             style={styles.addButton}
+            onPress={resetGame}
+          >
+            <Text style={styles.addButtonText}>Play Again</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.addButton}
             onPress={handleAddHighScore}
           >
-            <Text style={styles.addButtonText}>Add High Score</Text>
+            <Text style={styles.addButtonText}>Save High Score</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -283,15 +291,28 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", 
     position: "relative", 
   },
+  addButton: {
+    borderWidth: 2, 
+    borderColor: "#1FB0B6", 
+    borderRadius: 20, 
+    height: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    margin: 1,
+  },
+  addButtonText: {
+    fontSize: 20,
+  }, 
   scoreBoard: {
     width: "100%",
     paddingHorizontal: 20,
     paddingBottom: 10,
     backgroundColor: "#f2f2f2",
     alignItems: "center",
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 10,
-    borderColor: "#e6e6e6",
+    borderColor: "#1FB0B6",
   },
   scoreText: {
     fontSize: 20,
