@@ -3,30 +3,24 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity
+  TouchableOpacity,
+  FlatList,
 } from "react-native";
 import { Ionicons } from "react-native-vector-icons";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 
 const SettingsScreen = () => {
-  const { player1, player2, music } = useLocalSearchParams();
-
-  const [selectedMusic, setSelectedMusic] = useState(`${music}`);
+  const [selectedMusic, setSelectedMusic] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
+
   const router = useRouter();
 
-  // Define music options and their corresponding file paths
-  const musicOptions = [
-    { name: "80's Beats", path: "eighties" },
-    { name: "Arcade", path: "arcade" },
-    { name: "Space", path: "space" },
-  ];
-
+  const musicOptions = ["80's Beats", "Jazz", "Classical"];
   const colorOptions = ["Red", "Green", "Blue"];
 
   const handleMusicSelect = (music) => {
-    setSelectedMusic(music.path); // Set the file path for the selected music
-    console.log("Selected music file path:", selectedMusic);
+    setSelectedMusic(music);
+    console.log("Selected music:", music);
   };
 
   const handleColorSelect = (color) => {
@@ -46,12 +40,13 @@ const SettingsScreen = () => {
     </View>
   );
 
+  const highScores = ["Alice: 100", "Bob: 90", "Charlie: 80"];
 
   return (
     <View >
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => router.push(`/home?music=${selectedMusic}&player1=${player1}&player2=${player2}`)}
+          onPress={() => router.back()}
           style={styles.iconButton}
         >
           <Ionicons name="arrow-back" size={24} color="#ffffff" />
@@ -60,18 +55,19 @@ const SettingsScreen = () => {
         <Text style={styles.title}>Settings</Text>
 
         <TouchableOpacity
-          onPress={() => router.push(`/home?music=${selectedMusic}&player1=${player1}&player2=${player2}`)}
+          onPress={() => router.push("/")}
           style={styles.iconButton}
         >
           <Ionicons name="home" size={24} color="#ffffff" />
         </TouchableOpacity>
       </View>
 
+
       <View style={{alignItems: 'center' }}>
         <Text style={styles.sectionTitle}>Select Background Music</Text>
         {musicOptions.map((music, index) =>
           renderButton(
-            music.name,
+            music,
             () => handleMusicSelect(music),
             null,
             `music-${index}`
@@ -87,6 +83,8 @@ const SettingsScreen = () => {
             `color-${index}`
           )
         )}
+
+        
       </View>
     </View>
   );

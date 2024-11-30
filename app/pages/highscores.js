@@ -55,7 +55,7 @@ const HighScoresScreen = () => {
         <Text style={styles.title}>High Scores</Text>
 
         <TouchableOpacity
-          onPress={() => router.push("/home")}
+          onPress={() => router.push("/")}
           style={styles.iconButton}
         >
           <Ionicons name="home" size={24} color="#ffffff" />

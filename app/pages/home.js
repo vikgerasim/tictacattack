@@ -1,35 +1,32 @@
 import { StyleSheet, Text, View, ImageBackground } from 'react-native';
-import React from 'react';
-import { Link, useLocalSearchParams } from 'expo-router';
-
+import React, {useContext} from 'react';
+import { Link } from 'expo-router';
+import { PlayerContext } from './player-context';
 
 
 const Home = () => {
-  const { player1, player2, music } = useLocalSearchParams();
-    return (
+  const { player1, player2 } = useContext(PlayerContext);
+  return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require('../assets/tictactoe.jpg')}
+{/*       <ImageBackground
+        source={require('')}
         style={styles.imageBackground}
-      >
+      > */}
         <View style={styles.card}>
           <Text style={styles.text}>Tic Tac Attack</Text>
-          <Text style={styles.playerText}>
-            {player1} vs {player2}
-          </Text>
-          <Text style={styles.playerText}>
-            Music: {music}
-          </Text>
-          <Link href={`/game?playerXName=${player1}&playerOName=${player2}&music=${music}`} style={styles.button}>
+          <Link href="/game" style={styles.button}>
             <Text style={styles.buttonText}>Play Game</Text>
           </Link>
-          <Link href={`/settings?player1=${player1}&player2=${player2}&music=${music}`} style={styles.button}>
+          <Link href="/settings" style={styles.button}>
             <Text style={styles.buttonText}>Settings</Text>
           </Link><Link href="/highscores" style={styles.button}>
             <Text style={styles.buttonText}>High Scores</Text>
-          </Link>       
+          </Link>
+          <Text>
+            {player1} vs {player2}
+          </Text>
         </View>
-      </ImageBackground>
+{/*       </ImageBackground> */}
     </View>
   );
 };
@@ -67,12 +64,6 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
     marginBottom: 15,
-  },
-  playerText: {
-    color: 'black',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
   },
   button: {
     backgroundColor: '#007BFF',

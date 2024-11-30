@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   StyleSheet,
   Text,
@@ -6,10 +6,12 @@ import {
   TouchableOpacity,
   Alert,
   Dimensions,
-  StatusBar,
 } from "react-native";
 import { addHighScore } from "./api";
 import { Audio } from "expo-av";
+import { useLocalSearchParams } from "expo-router";
+import { Ionicons } from "react-native-vector-icons";
+import { useRouter } from "expo-router";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -25,8 +27,10 @@ const Game = () => {
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [startingPlayer, setStartingPlayer] = useState("X");
   const [moveCount, setMoveCount] = useState(0);
-  const [playerXName, setPlayerXName] = useState("Viktor");
-  const [playerOName, setPlayerOName] = useState("Gabriel");
+  const { playerXName, playerOName, music } = useLocalSearchParams();
+  const [currentMusic, setCurrentMusic] = useState(`${music}`);
+  const router = useRouter();
+
 
   const [grid, setGrid] = useState([
     ["", "", ""],
@@ -41,7 +45,6 @@ const Game = () => {
   });
 
   const [sound, setSound] = React.useState();
-
 
   // Handle cell press
   const handlePress = (row, col) => {
@@ -139,7 +142,6 @@ const Game = () => {
     shift = -1;
     gameOver = false;
     rotation = "0deg";
-  
   };
 
   const updateScore = (winner) => {
@@ -152,13 +154,12 @@ const Game = () => {
   };
 
   const handleAddHighScore = async () => {
-    const newHighScore1 = { name: playerXName, score: scores.X }; // Example data
-    const newHighScore2 = { name: playerOName, score: scores.O }; // Example data
+    const newHighScore1 = { name: playerXName, score: scores.X };
+    const newHighScore2 = { name: playerOName, score: scores.O };
 
     try {
-      const addedHighScore1 = await addHighScore(newHighScore1);
-      const addedHighScore2 = await addHighScore(newHighScore2);
-
+      await addHighScore(newHighScore1);
+      await addHighScore(newHighScore2);
 
       // Update the local state with the new high score
     } catch (error) {
@@ -169,7 +170,7 @@ const Game = () => {
   const playSound = async () => {
     try {
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/win.mp3') 
+        require("../assets/win.mp3")
       );
       await sound.playAsync();
       await sound.setVolumeAsync(0.2);
@@ -180,14 +181,56 @@ const Game = () => {
         }
       });
     } catch (error) {
-      console.error('Error playing sound:', error);
+      console.error("Error playing sound:", error);
     }
   };
 
   useEffect(() => {
     const playBackgroundMusic = async () => {
+      let musicFile;
+
+      switch (currentMusic) {
+        case "eighties":
+          musicFile = require("../assets/eighties.mp3");
+          break;
+        case "arcade":
+          musicFile = require("../assets/arcade.mp3");
+          break;
+        case "space":
+          musicFile = require("../assets/space.mp3");
+          break;
+        default:
+          musicFile = require("../assets/eighties.mp3"); // Default music
+      }
+
+      const { sound } = await Audio.Sound.createAsync(musicFile);
+      setSound(sound);
+      await sound.playAsync();
+      await sound.setVolumeAsync(0.1);
+      await sound.setIsLoopingAsync(true);
+    };
+
+    playBackgroundMusic();
+
+    return () => {
+      if (sound) {
+        sound.unloadAsync(); // Unload the sound when the component is unmounted
+      }
+    };
+  }, [currentMusic]); // Re-run this effect whenever currentMusic changes
+
+  const stopMusic = async () => {
+    if (sound) {
+      await sound.stopAsync(); // Stops the music
+      await sound.unloadAsync(); // Unloads the music to free resources
+      setSound(null); // Optionally clear the sound state
+    }
+  };
+
+  /* useEffect(() => {
+    const playBackgroundMusic = async () => {
       const { sound } = await Audio.Sound.createAsync(
-        require('../assets/tictactoe2.mp3') 
+        require("../assets/eighties.mp3") 
       );
       setSound(sound);
       await sound.playAsync(); 
@@ -203,12 +246,12 @@ const Game = () => {
       }
     };
   }, []); // 
-
+ */
   // Render a single cell
   const renderCell = (row, col) => {
     return (
       <TouchableOpacity
-        key={`${row}-${col}`} 
+        key={`${row}-${col}`}
         style={styles.cell}
         onPress={() => handlePress(row, col)}
       >
@@ -228,6 +271,36 @@ const Game = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity
+          onPress={() => {
+            resetGame();
+            stopMusic();
+            router.push(
+              `/home?music=${music}&player1=${playerXName}&player2=${playerOName}`
+            )
+          }}
+          style={styles.iconButton}
+        >
+          <Ionicons name="arrow-back" size={24} color="#ffffff" />
+        </TouchableOpacity>
+
+        <Text style={styles.title}>Settings</Text>
+
+        <TouchableOpacity
+          onPress={() => {
+            resetGame();
+            stopMusic();
+            router.push(
+              `/home?music=${music}&player1=${playerXName}&player2=${playerOName}`
+            )
+          }}
+          style={styles.iconButton}
+        >
+          <Ionicons name="home" size={24} color="#ffffff" />
+        </TouchableOpacity>
+      </View>
+
       {/* Scoreboard and other text at the top */}
       <View style={styles.scoreBoard}>
         <Text style={styles.scoreText}>
@@ -257,14 +330,11 @@ const Game = () => {
         />
       )}
       {gameOver && (
-        <View style={{alignItems: 'center'}}>
-          <Text style={styles.scoreText}>
-            Player {currentPlayer === "X" ? "O" : "X"} wins!
+        <View style={{ alignItems: "center", marginTop: cellSize * 3.8 }}>
+          <Text style={styles.winText}>
+          {currentPlayer === "X" ? playerOName : playerXName} wins!
           </Text>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={resetGame}
-          >
+          <TouchableOpacity style={styles.addButton} onPress={resetGame}>
             <Text style={styles.addButtonText}>Play Again</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -284,51 +354,75 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    borderWidth: 10, 
-    borderColor: "#1FB0B6", 
-    borderRadius: 20, 
-    margin: 10, 
-    backgroundColor: "#fff", 
-    position: "relative", 
+    borderWidth: 10,
+    borderColor: "#1FB0B6",
+    borderRadius: 20,
+    margin: 10,
+    backgroundColor: "#fff",
+    position: "relative",
+  },
+  iconButton: {
+    paddingHorizontal: 10,
+  },
+  title: {
+    color: "#ffffff",
+    fontSize: 24,
+    fontWeight: "bold",
+    textAlign: "center",
+    flex: 1,
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#1FB0B6",
+    padding: 20,
   },
   addButton: {
-    borderWidth: 2, 
-    borderColor: "#1FB0B6", 
-    borderRadius: 20, 
+    borderWidth: 3,
+    borderColor: "#1FB0B6",
+    borderRadius: 20,
     height: 50,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
-    margin: 1,
+    marginTop: 10,
   },
   addButtonText: {
     fontSize: 20,
-  }, 
+  },
   scoreBoard: {
     width: "100%",
     paddingHorizontal: 20,
     paddingBottom: 10,
+    paddingTop: 8,
     backgroundColor: "#f2f2f2",
     alignItems: "center",
-    borderWidth: 1,
+    borderWidth: 3,
     borderRadius: 10,
     borderColor: "#1FB0B6",
+    marginTop: -10,
   },
   scoreText: {
     fontSize: 20,
     fontWeight: "bold",
   },
+  winText: {
+    fontSize: 30,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
   row: {
     flexDirection: "row",
   },
   gridContainer: {
-    position: "absolute", 
-    top: "50%", 
-    left: "50%", 
+    position: "absolute",
+    top: "50%",
+    left: "50%",
     transform: [
       { translateX: -cellSize * 1.5 },
       { translateY: -cellSize * 1.5 },
-    ], 
+    ],
   },
   cell: {
     width: cellSize,
