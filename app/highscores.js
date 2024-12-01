@@ -9,11 +9,13 @@ import {
 } from "react-native";
 import { getHighScores, createTasks, updateTasks, deleteTasks } from "./api";
 import { Ionicons } from "react-native-vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
 const HighScoresScreen = () => {
   const [highScores, setHighScores] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { player1, player2, music } = useLocalSearchParams();
+
 
   useEffect(() => {
     const fetchHighScores = async () => {
@@ -46,7 +48,7 @@ const HighScoresScreen = () => {
     <View>
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => router.back()}
+          onPress={() => router.push(`/home?music=${music}&player1=${player1}&player2=${player2}`)}
           style={styles.iconButton}
         >
           <Ionicons name="arrow-back" size={24} color="#ffffff" />
@@ -55,7 +57,7 @@ const HighScoresScreen = () => {
         <Text style={styles.title}>High Scores</Text>
 
         <TouchableOpacity
-          onPress={() => router.push("/home")}
+          onPress={() => router.push(`/home?music=${music}&player1=${player1}&player2=${player2}`)}
           style={styles.iconButton}
         >
           <Ionicons name="home" size={24} color="#ffffff" />

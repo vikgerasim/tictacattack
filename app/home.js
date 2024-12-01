@@ -25,7 +25,7 @@ const Home = () => {
           </Link>
           <Link href={`/settings?player1=${player1}&player2=${player2}&music=${music}`} style={styles.button}>
             <Text style={styles.buttonText}>Settings</Text>
-          </Link><Link href="/highscores" style={styles.button}>
+          </Link><Link href={`/highscores?player1=${player1}&player2=${player2}&music=${music}`} style={styles.button}>
             <Text style={styles.buttonText}>High Scores</Text>
           </Link>       
         </View>

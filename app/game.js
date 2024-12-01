@@ -70,7 +70,7 @@ const Game = () => {
 
       playSound();
 
-      Alert.alert(`Player ${currentPlayer} wins!`);
+      //Alert.alert(`Player ${currentPlayer} wins!`);
       //resetGame();
     } else if (moveCount === 8) {
       Alert.alert("It's a draw!");
@@ -160,7 +160,7 @@ const Game = () => {
     try {
       await addHighScore(newHighScore1);
       await addHighScore(newHighScore2);
-
+      Alert.alert("High scores updated!");
       // Update the local state with the new high score
     } catch (error) {
       console.error("Error adding high score:", error);
@@ -309,7 +309,7 @@ const Game = () => {
         <Text style={styles.scoreText}>
           {playerOName} (O): {scores.O}
         </Text>
-        <Text style={styles.scoreText}>Player {currentPlayer} turn</Text>
+        <Text style={styles.scoreText}>{currentPlayer === "X" ? playerXName : playerOName}'s turn</Text>
       </View>
 
       {/* Centered Game Grid */}
@@ -383,6 +383,7 @@ const styles = StyleSheet.create({
     borderColor: "#1FB0B6",
     borderRadius: 20,
     height: 50,
+    width: 200,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
