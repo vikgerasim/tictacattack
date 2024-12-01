@@ -5,7 +5,7 @@ import { Link, useLocalSearchParams } from 'expo-router';
 
 
 const Home = () => {
-  const { player1, player2, music } = useLocalSearchParams();
+  const { player1, player2, music, color } = useLocalSearchParams();
     return (
     <View style={styles.container}>
       <ImageBackground
@@ -17,15 +17,12 @@ const Home = () => {
           <Text style={styles.playerText}>
             {player1} vs {player2}
           </Text>
-          <Text style={styles.playerText}>
-            Music: {music}
-          </Text>
-          <Link href={`/game?playerXName=${player1}&playerOName=${player2}&music=${music}`} style={styles.button}>
+          <Link href={`/game?playerXName=${player1}&playerOName=${player2}&music=${music}&color=${color}`} style={styles.button}>
             <Text style={styles.buttonText}>Play Game</Text>
           </Link>
-          <Link href={`/settings?player1=${player1}&player2=${player2}&music=${music}`} style={styles.button}>
+          <Link href={`/settings?player1=${player1}&player2=${player2}&music=${music}&color=${color}`} style={styles.button}>
             <Text style={styles.buttonText}>Settings</Text>
-          </Link><Link href={`/highscores?player1=${player1}&player2=${player2}&music=${music}`} style={styles.button}>
+          </Link><Link href={`/highscores?player1=${player1}&player2=${player2}&music=${music}&color=${color}`} style={styles.button}>
             <Text style={styles.buttonText}>High Scores</Text>
           </Link>       
         </View>
@@ -70,7 +67,7 @@ const styles = StyleSheet.create({
   },
   playerText: {
     color: 'black',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
   },

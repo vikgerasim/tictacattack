@@ -9,10 +9,10 @@ import { Ionicons } from "react-native-vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
 const SettingsScreen = () => {
-  const { player1, player2, music } = useLocalSearchParams();
+  const { player1, player2, music, color } = useLocalSearchParams();
 
   const [selectedMusic, setSelectedMusic] = useState(`${music}`);
-  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(`${color}`);
   const router = useRouter();
 
   // Define music options and their corresponding file paths
@@ -22,7 +22,13 @@ const SettingsScreen = () => {
     { name: "Space", path: "space" },
   ];
 
-  const colorOptions = ["Red", "Green", "Blue"];
+  //const colorOptions = ["Red", "Green", "Blue"];
+  const colorOptions = [
+    { name: "Teal", code: "1FB0B6" },
+    { name: "Blue", code: "4C63E4" },
+    { name: "Green", code: "7DDA58" },
+    { name: "Red", code: "D20103" }
+  ];
 
   const handleMusicSelect = (music) => {
     setSelectedMusic(music.path); // Set the file path for the selected music
@@ -30,28 +36,42 @@ const SettingsScreen = () => {
   };
 
   const handleColorSelect = (color) => {
-    setSelectedColor(color);
+    setSelectedColor(color.code); // Set the color code for the selected color
     console.log("Selected color:", color);
   };
 
   const renderButton = (label, onPress, style, key) => (
-    <TouchableOpacity key={key} onPress={onPress} style={styles.button}>
+    <TouchableOpacity key={key} onPress={onPress} style={buttonStyle}>
       <Text style={[styles.buttonText, style]}>{label}</Text>
     </TouchableOpacity>
   );
 
-  const renderItem = ({ item }) => (
+/*   const renderItem = ({ item }) => (
     <View style={styles.scoreItem}>
       <Text style={styles.score}>{item}</Text>
     </View>
-  );
+  ); */
 
+  const headerStyle = {
+    ...styles.header,
+    backgroundColor: `#${selectedColor}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
+
+  const sectionTitleStyle = {
+    ...styles.sectionTitle,
+    color: `#${selectedColor}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
+
+  const buttonStyle = {
+    ...styles.button,
+    borderColor: `#${selectedColor}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
 
   return (
     <View >
-      <View style={styles.header}>
+      <View style={headerStyle}>
         <TouchableOpacity
-          onPress={() => router.push(`/home?music=${selectedMusic}&player1=${player1}&player2=${player2}`)}
+          onPress={() => router.push(`/home?music=${selectedMusic}&player1=${player1}&player2=${player2}&color=${selectedColor}`)}
           style={styles.iconButton}
         >
           <Ionicons name="arrow-back" size={24} color="#ffffff" />
@@ -60,7 +80,7 @@ const SettingsScreen = () => {
         <Text style={styles.title}>Settings</Text>
 
         <TouchableOpacity
-          onPress={() => router.push(`/home?music=${selectedMusic}&player1=${player1}&player2=${player2}`)}
+          onPress={() => router.push(`/home?music=${selectedMusic}&player1=${player1}&player2=${player2}&color=${selectedColor}`)}
           style={styles.iconButton}
         >
           <Ionicons name="home" size={24} color="#ffffff" />
@@ -68,7 +88,7 @@ const SettingsScreen = () => {
       </View>
 
       <View style={{alignItems: 'center' }}>
-        <Text style={styles.sectionTitle}>Select Background Music</Text>
+        <Text style={sectionTitleStyle}>Select Background Music</Text>
         {musicOptions.map((music, index) =>
           renderButton(
             music.name,
@@ -78,12 +98,12 @@ const SettingsScreen = () => {
           )
         )}
 
-        <Text style={styles.sectionTitle}>Select Background Color</Text>
+        <Text style={sectionTitleStyle}>Select Background Color</Text>
         {colorOptions.map((color, index) =>
           renderButton(
-            color,
+            color.name,
             () => handleColorSelect(color),
-            { color: color.toLowerCase() },
+            { color: `#${color.code}` },
             `color-${index}`
           )
         )}
@@ -113,7 +133,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#1FB0B6",
+    //backgroundColor: "#1FB0B6",
     padding: 20,
     marginBottom: 20,
   },
@@ -131,7 +151,7 @@ const styles = StyleSheet.create({
     width: "80%",
     maxWidth: 400,
     borderRadius: 12,
-    borderColor: "#1FB0B6",
+    //borderColor: "#1FB0B6",
     borderWidth: 2,
     shadowColor: "#000",
     shadowOpacity: 0.2,

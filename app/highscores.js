@@ -4,17 +4,16 @@ import {
   Text,
   View,
   FlatList,
-  ScrollView,
   TouchableOpacity,
 } from "react-native";
-import { getHighScores, createTasks, updateTasks, deleteTasks } from "./api";
+import { getHighScores } from "./api";
 import { Ionicons } from "react-native-vector-icons";
 import { useRouter, useLocalSearchParams } from "expo-router";
 
 const HighScoresScreen = () => {
   const [highScores, setHighScores] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { player1, player2, music } = useLocalSearchParams();
+  const { player1, player2, music, color } = useLocalSearchParams();
 
 
   useEffect(() => {
@@ -38,17 +37,27 @@ const HighScoresScreen = () => {
 
   // Render each item in the list
   const renderItem = ({ item }) => (
-    <View style={styles.scoreItem}>
+    <View style={scoreItemStyle}>
       <Text style={styles.name}>{item.name}</Text>
       <Text style={styles.score}>{item.score}</Text>
     </View>
   );
 
+  const headerStyle = {
+    ...styles.header,
+    backgroundColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
+
+  const scoreItemStyle = {
+    ...styles.scoreItem,
+    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
+
   return (
     <View>
-      <View style={styles.header}>
+      <View style={headerStyle}>
         <TouchableOpacity
-          onPress={() => router.push(`/home?music=${music}&player1=${player1}&player2=${player2}`)}
+          onPress={() => router.push(`/home?music=${music}&player1=${player1}&player2=${player2}&color=${color}`)}
           style={styles.iconButton}
         >
           <Ionicons name="arrow-back" size={24} color="#ffffff" />
@@ -57,7 +66,7 @@ const HighScoresScreen = () => {
         <Text style={styles.title}>High Scores</Text>
 
         <TouchableOpacity
-          onPress={() => router.push(`/home?music=${music}&player1=${player1}&player2=${player2}`)}
+          onPress={() => router.push(`/home?music=${music}&player1=${player1}&player2=${player2}&color=${color}`)}
           style={styles.iconButton}
         >
           <Ionicons name="home" size={24} color="#ffffff" />
@@ -97,7 +106,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#1FB0B6",
     padding: 20,
     marginBottom: 20,
   },
@@ -113,7 +121,6 @@ const styles = StyleSheet.create({
     width: "80%",
     maxWidth: 400,
     borderRadius: 12,
-    borderColor: "#1FB0B6",
     borderWidth: 2,
     shadowColor: "#000",
     shadowOpacity: 0.2,

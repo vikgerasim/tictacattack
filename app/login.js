@@ -52,7 +52,7 @@ const Login = () => {
             />
 
             <Link
-              href={`/home?player1=${player1}&player2=${player2}&music=eighties`}
+              href={`/home?player1=${player1}&player2=${player2}&music=eighties&color=1FB0B6`}
               style={[styles.button, !isStartEnabled && styles.disabledButton]}
               disabled={!isStartEnabled}
             >

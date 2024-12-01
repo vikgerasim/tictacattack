@@ -27,8 +27,9 @@ const Game = () => {
   const [currentPlayer, setCurrentPlayer] = useState("X");
   const [startingPlayer, setStartingPlayer] = useState("X");
   const [moveCount, setMoveCount] = useState(0);
-  const { playerXName, playerOName, music } = useLocalSearchParams();
+  const { playerXName, playerOName, music, color } = useLocalSearchParams();
   const [currentMusic, setCurrentMusic] = useState(`${music}`);
+  const [draw, setDraw] = useState(false);
   const router = useRouter();
 
 
@@ -73,7 +74,8 @@ const Game = () => {
       //Alert.alert(`Player ${currentPlayer} wins!`);
       //resetGame();
     } else if (moveCount === 8) {
-      Alert.alert("It's a draw!");
+     //Alert.alert("It's a draw!");
+      setDraw(true);
       //resetGame();
     }
   };
@@ -142,6 +144,7 @@ const Game = () => {
     shift = -1;
     gameOver = false;
     rotation = "0deg";
+    setDraw(false);
   };
 
   const updateScore = (winner) => {
@@ -227,26 +230,7 @@ const Game = () => {
     }
   };
 
-  /* useEffect(() => {
-    const playBackgroundMusic = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        require("../assets/eighties.mp3") 
-      );
-      setSound(sound);
-      await sound.playAsync(); 
-      await sound.setVolumeAsync(0.1); 
-      await sound.setIsLoopingAsync(true);
-
-    };
-
-    playBackgroundMusic();
-    return () => {
-      if (sound) {
-        sound.unloadAsync(); // Unload the sound when the component is unmounted
-      }
-    };
-  }, []); // 
- */
+  
   // Render a single cell
   const renderCell = (row, col) => {
     return (
@@ -269,15 +253,35 @@ const Game = () => {
     ));
   };
 
+  const headerStyle = {
+    ...styles.header,
+    backgroundColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  }; 
+
+  const constainerStyle = {
+    ...styles.container,
+    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
+
+  const addButtonStyle = {
+    ...styles.addButton,
+    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
+
+  const scoreBoardStyle = {
+    ...styles.scoreBoard,
+    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={constainerStyle}>
+      <View style={headerStyle}>
         <TouchableOpacity
           onPress={() => {
             resetGame();
             stopMusic();
             router.push(
-              `/home?music=${music}&player1=${playerXName}&player2=${playerOName}`
+              `/home?music=${music}&player1=${playerXName}&player2=${playerOName}&color=${color}`
             )
           }}
           style={styles.iconButton}
@@ -292,7 +296,7 @@ const Game = () => {
             resetGame();
             stopMusic();
             router.push(
-              `/home?music=${music}&player1=${playerXName}&player2=${playerOName}`
+              `/home?music=${music}&player1=${playerXName}&player2=${playerOName}&color=${color}`
             )
           }}
           style={styles.iconButton}
@@ -302,7 +306,7 @@ const Game = () => {
       </View>
 
       {/* Scoreboard and other text at the top */}
-      <View style={styles.scoreBoard}>
+      <View style={scoreBoardStyle}>
         <Text style={styles.scoreText}>
           {playerXName} (X): {scores.X}
         </Text>
@@ -334,11 +338,27 @@ const Game = () => {
           <Text style={styles.winText}>
           {currentPlayer === "X" ? playerOName : playerXName} wins!
           </Text>
-          <TouchableOpacity style={styles.addButton} onPress={resetGame}>
+          <TouchableOpacity style={addButtonStyle} onPress={resetGame}>
             <Text style={styles.addButtonText}>Play Again</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.addButton}
+            style={addButtonStyle}
+            onPress={handleAddHighScore}
+          >
+            <Text style={styles.addButtonText}>Save High Score</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      {draw && (
+        <View style={{ alignItems: "center", marginTop: cellSize * 3.8 }}>
+          <Text style={styles.winText}>
+          It's a draw!
+          </Text>
+          <TouchableOpacity style={addButtonStyle} onPress={resetGame}>
+            <Text style={styles.addButtonText}>Play Again</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={addButtonStyle}
             onPress={handleAddHighScore}
           >
             <Text style={styles.addButtonText}>Save High Score</Text>
@@ -355,7 +375,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     borderWidth: 10,
-    borderColor: "#1FB0B6",
+    //borderColor: "#1FB0B6",
     borderRadius: 20,
     margin: 10,
     backgroundColor: "#fff",
@@ -375,12 +395,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#1FB0B6",
+    //backgroundColor: "#1FB0B6",
     padding: 20,
   },
   addButton: {
     borderWidth: 3,
-    borderColor: "#1FB0B6",
+    //borderColor: "#1FB0B6",
     borderRadius: 20,
     height: 50,
     width: 200,
@@ -401,7 +421,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 3,
     borderRadius: 10,
-    borderColor: "#1FB0B6",
+    //borderColor: "#1FB0B6",
     marginTop: -10,
   },
   scoreText: {
