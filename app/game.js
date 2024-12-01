@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -39,7 +39,6 @@ const Game = () => {
     ["", "", ""],
   ]);
 
-  // Score state
   const [scores, setScores] = useState({
     X: 0,
     O: 0,
@@ -47,42 +46,30 @@ const Game = () => {
 
   const [sound, setSound] = React.useState();
 
-  // Handle cell press
   const handlePress = (row, col) => {
     if (checkWinner(grid) || moveCount === 9) {
       resetGame();
       return;
     }
 
-    // If the cell is already filled, return early
     if (grid[row][col] !== "") return;
 
-    // Copy the grid and update the clicked cell
     const newGrid = [...grid];
     newGrid[row][col] = currentPlayer;
 
-    // Update the state with the new grid and switch players
     setGrid(newGrid);
     setCurrentPlayer(currentPlayer === "X" ? "O" : "X");
     setMoveCount(moveCount + 1);
-    // Check for a winning condition
+
     if (checkWinner(grid)) {
       updateScore(currentPlayer);
-
       playSound();
-
-      //Alert.alert(`Player ${currentPlayer} wins!`);
-      //resetGame();
     } else if (moveCount === 8) {
-     //Alert.alert("It's a draw!");
       setDraw(true);
-      //resetGame();
     }
   };
 
-  // Check for a winning condition
   const checkWinner = (grid) => {
-    // Check rows
     for (let row of grid) {
       shift++;
       if (row[0] !== "" && row[0] === row[1] && row[1] === row[2]) {
@@ -93,7 +80,6 @@ const Game = () => {
     }
     shift = 3;
 
-    // Check columns
     for (let col = 0; col < 3; col++) {
       shift--;
       if (
@@ -108,7 +94,6 @@ const Game = () => {
     }
     shift = 1;
 
-    // Check diagonals
     if (
       grid[0][0] !== "" &&
       grid[0][0] === grid[1][1] &&
@@ -131,7 +116,6 @@ const Game = () => {
     return false;
   };
 
-  // Reset the game
   const resetGame = () => {
     setGrid([
       ["", "", ""],
@@ -148,7 +132,6 @@ const Game = () => {
   };
 
   const updateScore = (winner) => {
-    //Alert.alert(`Score updated for Player ${winner}`);
 
     setScores((prevScores) => ({
       ...prevScores,
@@ -164,7 +147,6 @@ const Game = () => {
       await addHighScore(newHighScore1);
       await addHighScore(newHighScore2);
       Alert.alert("High scores updated!");
-      // Update the local state with the new high score
     } catch (error) {
       console.error("Error adding high score:", error);
     }
@@ -176,8 +158,7 @@ const Game = () => {
         require("../assets/win.mp3")
       );
       await sound.playAsync();
-      await sound.setVolumeAsync(0.2);
-      // Optionally unload the sound after playing to free resources
+      await sound.setVolumeAsync(0.1);
       sound.setOnPlaybackStatusUpdate((status) => {
         if (status.didJustFinish) {
           sound.unloadAsync();
@@ -203,7 +184,7 @@ const Game = () => {
           musicFile = require("../assets/space.mp3");
           break;
         default:
-          musicFile = require("../assets/eighties.mp3"); // Default music
+          musicFile = require("../assets/eighties.mp3"); 
       }
 
       const { sound } = await Audio.Sound.createAsync(musicFile);
@@ -217,21 +198,20 @@ const Game = () => {
 
     return () => {
       if (sound) {
-        sound.unloadAsync(); // Unload the sound when the component is unmounted
+        sound.unloadAsync(); 
       }
     };
-  }, [currentMusic]); // Re-run this effect whenever currentMusic changes
+  }, [currentMusic]); 
 
   const stopMusic = async () => {
     if (sound) {
-      await sound.stopAsync(); // Stops the music
-      await sound.unloadAsync(); // Unloads the music to free resources
-      setSound(null); // Optionally clear the sound state
+      await sound.stopAsync(); 
+      await sound.unloadAsync(); 
+      setSound(null); 
     }
   };
 
   
-  // Render a single cell
   const renderCell = (row, col) => {
     return (
       <TouchableOpacity
@@ -244,7 +224,6 @@ const Game = () => {
     );
   };
 
-  // Render the grid
   const renderGrid = () => {
     return grid.map((row, rowIndex) => (
       <View key={rowIndex} style={styles.row}>
@@ -255,22 +234,22 @@ const Game = () => {
 
   const headerStyle = {
     ...styles.header,
-    backgroundColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    backgroundColor: `#${color}` || "#1FB0B6", 
   }; 
 
   const constainerStyle = {
     ...styles.container,
-    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    borderColor: `#${color}` || "#1FB0B6", 
   };
 
   const addButtonStyle = {
     ...styles.addButton,
-    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    borderColor: `#${color}` || "#1FB0B6", 
   };
 
   const scoreBoardStyle = {
     ...styles.scoreBoard,
-    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    borderColor: `#${color}` || "#1FB0B6", 
   };
 
   return (
@@ -305,7 +284,7 @@ const Game = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Scoreboard and other text at the top */}
+   
       <View style={scoreBoardStyle}>
         <Text style={styles.scoreText}>
           {playerXName} (X): {scores.X}
@@ -315,8 +294,6 @@ const Game = () => {
         </Text>
         <Text style={styles.scoreText}>{currentPlayer === "X" ? playerXName : playerOName}'s turn</Text>
       </View>
-
-      {/* Centered Game Grid */}
 
       <View style={styles.gridContainer}>{renderGrid()}</View>
       {gameOver && (
@@ -375,7 +352,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     borderWidth: 10,
-    //borderColor: "#1FB0B6",
     borderRadius: 20,
     margin: 10,
     backgroundColor: "#fff",
@@ -395,12 +371,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    //backgroundColor: "#1FB0B6",
     padding: 20,
   },
   addButton: {
     borderWidth: 3,
-    //borderColor: "#1FB0B6",
     borderRadius: 20,
     height: 50,
     width: 200,
@@ -421,7 +395,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderWidth: 3,
     borderRadius: 10,
-    //borderColor: "#1FB0B6",
     marginTop: -10,
   },
   scoreText: {

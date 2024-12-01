@@ -19,7 +19,6 @@ const Login = () => {
     if (name === "player1") setPlayer1(value);
     if (name === "player2") setPlayer2(value);
 
-    // Enable the Start button only if both fields are non-blank
     setIsStartEnabled(
       value.trim() !== "" && player1.trim() !== "" && player2.trim() !== ""
     );

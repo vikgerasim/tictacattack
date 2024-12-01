@@ -15,14 +15,12 @@ const SettingsScreen = () => {
   const [selectedColor, setSelectedColor] = useState(`${color}`);
   const router = useRouter();
 
-  // Define music options and their corresponding file paths
   const musicOptions = [
     { name: "80's Beats", path: "eighties" },
     { name: "Arcade", path: "arcade" },
     { name: "Space", path: "space" },
   ];
 
-  //const colorOptions = ["Red", "Green", "Blue"];
   const colorOptions = [
     { name: "Teal", code: "1FB0B6" },
     { name: "Blue", code: "4C63E4" },
@@ -31,12 +29,12 @@ const SettingsScreen = () => {
   ];
 
   const handleMusicSelect = (music) => {
-    setSelectedMusic(music.path); // Set the file path for the selected music
+    setSelectedMusic(music.path); 
     console.log("Selected music file path:", selectedMusic);
   };
 
   const handleColorSelect = (color) => {
-    setSelectedColor(color.code); // Set the color code for the selected color
+    setSelectedColor(color.code); 
     console.log("Selected color:", color);
   };
 
@@ -46,25 +44,20 @@ const SettingsScreen = () => {
     </TouchableOpacity>
   );
 
-/*   const renderItem = ({ item }) => (
-    <View style={styles.scoreItem}>
-      <Text style={styles.score}>{item}</Text>
-    </View>
-  ); */
 
   const headerStyle = {
     ...styles.header,
-    backgroundColor: `#${selectedColor}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    backgroundColor: `#${selectedColor}` || "#1FB0B6", 
   };
 
   const sectionTitleStyle = {
     ...styles.sectionTitle,
-    color: `#${selectedColor}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    color: `#${selectedColor}` || "#1FB0B6", 
   };
 
   const buttonStyle = {
     ...styles.button,
-    borderColor: `#${selectedColor}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    borderColor: `#${selectedColor}` || "#1FB0B6", 
   };
 
   return (
@@ -133,7 +126,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    //backgroundColor: "#1FB0B6",
     padding: 20,
     marginBottom: 20,
   },
@@ -151,7 +143,6 @@ const styles = StyleSheet.create({
     width: "80%",
     maxWidth: 400,
     borderRadius: 12,
-    //borderColor: "#1FB0B6",
     borderWidth: 2,
     shadowColor: "#000",
     shadowOpacity: 0.2,

@@ -20,7 +20,6 @@ const HighScoresScreen = () => {
     const fetchHighScores = async () => {
       try {
         const scores = await getHighScores();
-        // Sort scores in descending order
         let sortedScores = scores.sort((a, b) => b.score - a.score);
         setHighScores(sortedScores.slice(0, 10));
         setLoading(false);
@@ -35,7 +34,6 @@ const HighScoresScreen = () => {
 
   const router = useRouter();
 
-  // Render each item in the list
   const renderItem = ({ item }) => (
     <View style={scoreItemStyle}>
       <Text style={styles.name}>{item.name}</Text>
@@ -45,12 +43,12 @@ const HighScoresScreen = () => {
 
   const headerStyle = {
     ...styles.header,
-    backgroundColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    backgroundColor: `#${color}` || "#1FB0B6", 
   };
 
   const scoreItemStyle = {
     ...styles.scoreItem,
-    borderColor: `#${color}` || "#1FB0B6", // Fallback to default color if `colour` is undefined
+    borderColor: `#${color}` || "#1FB0B6", 
   };
 
   return (
@@ -73,12 +71,11 @@ const HighScoresScreen = () => {
         </TouchableOpacity>
       </View>
 
-      {/* FlatList to display high scores */}
       <FlatList
         data={highScores}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
-        showsVerticalScrollIndicator={false} // Hide scroll indicator for cleaner look
+        showsVerticalScrollIndicator={false} 
       />
     </View>
   );
